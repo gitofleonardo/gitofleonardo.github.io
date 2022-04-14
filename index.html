@@ -181,8 +181,9 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2022-04-14 13:40:49" itemprop="dateCreated datePublished" datetime="2022-04-14T13:40:49+08:00">2022-04-14</time>
+              <time title="Created: 2022-04-14 13:40:49 / Modified: 16:29:24" itemprop="dateCreated datePublished" datetime="2022-04-14T13:40:49+08:00">2022-04-14</time>
             </span>
 
           
@@ -196,7 +197,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          
+          <h1 id="Linux-O-1-调度器"><a href="#Linux-O-1-调度器" class="headerlink" title="Linux-O(1)调度器"></a>Linux-O(1)调度器</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>O(1)调度器是在<code>Linux-2.6.0</code>内核中支持的调度器，之所以叫O(1)调度器，是因为不管有多少进程，调度都能在常数时间内完成。</p>
+<h2 id="调度器的结构"><a href="#调度器的结构" class="headerlink" title="调度器的结构"></a>调度器的结构</h2><p>对于O(1)调度来说，每个CPU都自己维护一个运行队列，运行队列由两个优先级数组组成，分别为活跃数组与过期数组。</p>
+<p>优先级数组，从数据结构上来说其实就是一个二级数组（图的邻接表表示法），每一级代表着一个优先级，总共包含了<code>MAX_PRIO</code>个（140个）个优先级。当活跃数组中的一个进程用完自己的时间片之后，就会被移动到另一个过期数组中。在移动的同时，其优先级也会被重新计算。当活跃数组中的所有的进程都用完时间片之后，活跃数组与过期数组的指针就会进行互换。</p>
+<p>在<code>Linux-2.6.0</code>内核中，运行队列<code>runqueue</code>的结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">runqueue</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * prio_array_t原型为prio_array</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">	<span class="type">prio_array_t</span> *active, *expired, arrays[<span class="number">2</span>];</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>优先数组<code>prio_array</code>的定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">prio_array</span> &#123;</span></span><br><span class="line">	<span class="type">int</span> nr_active;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> bitmap[BITMAP_SIZE];</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">queue</span>[<span class="title">MAX_PRIO</span>];</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>至此，可以很清晰地看到运行队列的结构了。</p>
+<h2 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h2><p>2.6.0内核的调度代码还是比较简洁的，在<code>schedule(void)</code>函数中（这是个系统调用）。</p>
+<ol>
+<li>做好切换调度前的准备，包括释放内核的自旋锁，给运行队列加上自旋锁</li>
+<li>选择下一个被执行的进程，这里会根据运行队列选出进程</li>
+<li>切换任务，包括切换上下文</li>
+<li>最后是释放运行队列的自旋锁，内核枷锁，启用抢占等</li>
+</ol>
+<p>其中在选择进程的时候，可能会重新计算进程的动态优先级，并放到过期数组中。</p>
+
       
     </div>
 
@@ -280,6 +299,12 @@
           <span class="site-state-item-count">1</span>
           <span class="site-state-item-name">posts</span>
         </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
