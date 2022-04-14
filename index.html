@@ -997,7 +997,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2022-04-14 13:40:49 / Modified: 16:29:24" itemprop="dateCreated datePublished" datetime="2022-04-14T13:40:49+08:00">2022-04-14</time>
+              <time title="Created: 2022-04-14 13:40:49 / Modified: 22:45:46" itemprop="dateCreated datePublished" datetime="2022-04-14T13:40:49+08:00">2022-04-14</time>
             </span>
 
           
@@ -1033,7 +1033,7 @@
 <li>做好切换调度前的准备，包括释放内核的自旋锁，给运行队列加上自旋锁</li>
 <li>选择下一个被执行的进程，这里会根据运行队列选出进程</li>
 <li>切换任务，包括切换上下文</li>
-<li>最后是释放运行队列的自旋锁，内核枷锁，启用抢占等</li>
+<li>最后是释放运行队列的自旋锁，内核加锁，启用抢占等</li>
 </ol>
 <p>其中在选择进程的时候，可能会重新计算进程的动态优先级，并放到过期数组中。</p>
 
