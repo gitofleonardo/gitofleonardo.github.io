@@ -181,7 +181,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2022-04-15 16:07:19 / Modified: 18:24:53" itemprop="dateCreated datePublished" datetime="2022-04-15T16:07:19+08:00">2022-04-15</time>
+              <time title="Created: 2022-04-15 16:07:19 / Modified: 19:27:45" itemprop="dateCreated datePublished" datetime="2022-04-15T16:07:19+08:00">2022-04-15</time>
             </span>
 
           
@@ -240,8 +240,65 @@
 <li>异常处理流程：异常不需要通过中断控制器发送电信号，只需要CPU找到相应的门描述符，获取相应的异常服务处理程序。</li>
 </ul>
 <h2 id="中断API"><a href="#中断API" class="headerlink" title="中断API"></a>中断API</h2><p>内核提供了一组接口用于控制系统上的中断状态，开发驱动需要了解这些接口的使用。</p>
-<h3 id="request-irq函数"><a href="#request-irq函数" class="headerlink" title="request_irq函数"></a>request_irq函数</h3><p><code>request_irq</code>的主要任务是为<code>IRQ</code>线的中断请求队列创建上文提到的<code>irqaction</code>结点。</p>
-<p>…未完待续</p>
+<h3 id="request-irq函数"><a href="#request-irq函数" class="headerlink" title="request_irq函数"></a>request_irq函数</h3><p><code>request_irq</code>的主要任务是为<code>IRQ</code>线的中断请求队列创建上文提到的<code>irqaction</code>结点。此函数定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">request_irq</span><span class="params">(</span></span><br><span class="line"><span class="params">    <span class="comment">/* 要申请的IRQ线 */</span></span></span><br><span class="line"><span class="params">    <span class="type">unsigned</span> <span class="type">int</span> irq,</span></span><br><span class="line"><span class="params">    <span class="comment">/* 中断处理方法 */</span></span></span><br><span class="line"><span class="params">    <span class="type">irqreturn_t</span> (*handler)(<span class="type">int</span>, <span class="type">void</span> *, <span class="keyword">struct</span> pt_regs *,),</span></span><br><span class="line"><span class="params">    <span class="comment">/* irq类型 */</span></span></span><br><span class="line"><span class="params">    <span class="type">unsigned</span> <span class="type">long</span> irq_flags,</span></span><br><span class="line"><span class="params">    <span class="comment">/* 设备名 */</span></span></span><br><span class="line"><span class="params">    <span class="type">const</span> <span class="type">char</span> * devname,</span></span><br><span class="line"><span class="params">    <span class="comment">/* 设备ID */</span></span></span><br><span class="line"><span class="params">    <span class="type">void</span> *dev_id</span></span><br><span class="line"><span class="params">)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="free-irq函数"><a href="#free-irq函数" class="headerlink" title="free_irq函数"></a>free_irq函数</h3><p><code>free_irq</code>函数的作用与<code>request_irq</code>函数的作用刚好相反，是从设备描述符中移除相应设备的结点。原型如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> <span class="title function_">free_irq</span><span class="params">(<span class="type">unsigned</span> <span class="type">int</span> irq, <span class="type">void</span> *dev_id)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="激活与禁止"><a href="#激活与禁止" class="headerlink" title="激活与禁止"></a>激活与禁止</h3><p>通常来说，中断处理程序处理中断的时候，如果想要避免并发带来的问题，则需要禁止中断线确保不会抢占代码。</p>
+<table>
+<thead>
+<tr>
+<th>函数</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>local_irq_disable()</td>
+<td>禁止当前CPU的中断</td>
+</tr>
+<tr>
+<td>local_irq_enable()</td>
+<td>激活当前CPU的中断</td>
+</tr>
+<tr>
+<td>local_irq_save()</td>
+<td>禁止当前CPU的中断并保存标志寄存器的内容</td>
+</tr>
+<tr>
+<td>local_irq_restore()</td>
+<td>恢复当前CPU的中断状态，必须与local_irq_save()函数处于同一函数当中</td>
+</tr>
+<tr>
+<td>disable()</td>
+<td>禁止指定的中断线，返回前会确保当前中断线上的所有中断处理程序已经退出</td>
+</tr>
+<tr>
+<td>enable_irq()</td>
+<td>激活指定的中断线</td>
+</tr>
+<tr>
+<td>disable_irq_nosync()</td>
+<td>禁止指定的中断线，但不会确保当前中断线的中断处理程序已经退出</td>
+</tr>
+<tr>
+<td>in_irq()</td>
+<td>判断内核是否在执行中断函数</td>
+</tr>
+<tr>
+<td>in_softrq()</td>
+<td>判断是否正在处理软中断</td>
+</tr>
+<tr>
+<td>in_interrupt()</td>
+<td>判断是否处于中断上下文，比如正在执行中断程序或者下半部处理程序</td>
+</tr>
+</tbody></table>
+<h2 id="多处理器系统中的中断处理"><a href="#多处理器系统中的中断处理" class="headerlink" title="多处理器系统中的中断处理"></a>多处理器系统中的中断处理</h2><h3 id="处理器间中断"><a href="#处理器间中断" class="headerlink" title="处理器间中断"></a>处理器间中断</h3><p>现代操作系统中，通常需要多个处理器之间进行协调工作，这是通过处理器间中断<code>IPI</code>来实现的。</p>
+<h3 id="中断亲和力"><a href="#中断亲和力" class="headerlink" title="中断亲和力"></a>中断亲和力</h3><p>指将一个或者多个中断服务程序绑定到特定的CPU上去运行。</p>
+<h3 id="中断负载均衡"><a href="#中断负载均衡" class="headerlink" title="中断负载均衡"></a>中断负载均衡</h3><p>将重负载的CPU上的中断转移到比较空闲的CPU上进行处理。</p>
+<h2 id="中断的下半部"><a href="#中断的下半部" class="headerlink" title="中断的下半部"></a>中断的下半部</h2><p>为了解决一次响应需要处理的大量数据的中断，Linux将中断的工作划分为两个部分，即中断的上半部和下半部。上半部是实际响应中断的程序，下半部是是其他一些可以延缓处理的部分，在下半部分处理期间，中断还是打开的。例如网卡的中断接收过程就是这样。</p>
 
       
     </div>
