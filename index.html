@@ -156,6 +156,79 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/16/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Hhvvg">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hhvvg | Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/16/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/" class="post-title-link" itemprop="url">Linux内存管理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-16 14:31:21 / Modified: 15:28:28" itemprop="dateCreated datePublished" datetime="2022-04-16T14:31:21+08:00">2022-04-16</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h1><p>内存分页是Linux中的一种内存管理机制，内存被分为固定大小的块，称为页（page）。Linux中的页使用结构<code>struct page</code>来表示。</p>
+<h2 id="内存的分配"><a href="#内存的分配" class="headerlink" title="内存的分配"></a>内存的分配</h2><h3 id="BUDDY算法"><a href="#BUDDY算法" class="headerlink" title="BUDDY算法"></a>BUDDY算法</h3><p>BUDDY算法的作用是减少存储空间中的空洞与碎片，增加利用率。其基本思想是把内存中的所有页面按照2的幂次方进行分块管理，分配的时候如果没有找到相应大小的块，就把大的块一分为二划分为两个小块；释放内存的时候，相邻的块又能够合成新的大块。</p>
+<h3 id="SLAB内存管理"><a href="#SLAB内存管理" class="headerlink" title="SLAB内存管理"></a>SLAB内存管理</h3><p>BUDDY内存分配的时候，是以页块为基本单位来分配的。但是这种方法的缺点就是粒度比较大，而大多数的内核对象远小于页的大小，因此需要一种更加细粒度的方法来对内存进行管理。由此，Linux引入了SLAB层来进行更加细致的内存管理。</p>
+<p>SLAB使用高速缓存来描述不同的内存对象，每种内存对象对应着一个高速缓存。SLAB按照对象的大小进行了分组，在分配的时候不会产生大的内存碎片，并且支持硬件缓存来提高TLB的性能。</p>
+<p>为了方便管理，SLAB分为三种状态：full、partial和empty。full表示没有可用的内存对象，partial表示部分使用中，empty表示没有正在使用的内存对象。</p>
+<h3 id="SLUB与SLOB"><a href="#SLUB与SLOB" class="headerlink" title="SLUB与SLOB"></a>SLUB与SLOB</h3><p>SLUB保留了SLAB的基本思想，但是简化了SLAB中的一些结构，提升内存利用率。而SLOB是一个简化的内存分配器，主要适用于内存非常有限、处理简单的系统。</p>
+<h1 id="进程地址空间"><a href="#进程地址空间" class="headerlink" title="进程地址空间"></a>进程地址空间</h1><h2 id="内存映射"><a href="#内存映射" class="headerlink" title="内存映射"></a>内存映射</h2><p>一个进程运行的时候，其用到文件的代码段、数据段等都是映射到内存地址区域的，这个功能是通过<code>mmap()</code>系统调用来实现的。<code>mmap()</code>将文件从偏移<code>offset</code>的位置开始的长度为<code>length</code>的一个块映射到内存区域中。</p>
+<h2 id="缺页错误"><a href="#缺页错误" class="headerlink" title="缺页错误"></a>缺页错误</h2><p>虚拟内存进行分配之后，并没有分配相应的物理页面。内核通过缺页错误进行处理，然后进行页表层的创建。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/15/Linux%E8%BF%9B%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1447,7 +1520,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-count">10</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

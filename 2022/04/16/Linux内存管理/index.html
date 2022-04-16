@@ -20,21 +20,20 @@
     var CONFIG = {"hostname":"gitofleonardo.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="关于Android11下单编Framework的问题在Android 11下，不知道为什么原本我在Android 6.0下使用的mm出现了错误（会把test也一并编译，导致问题），因此更换为下面的命令： make -j16 SystemUI make -j16 framework or make -j16framework-minus-apex make -j16 services">
+  <meta name="description" content="内存分页内存分页是Linux中的一种内存管理机制，内存被分为固定大小的块，称为页（page）。Linux中的页使用结构struct page来表示。 内存的分配BUDDY算法BUDDY算法的作用是减少存储空间中的空洞与碎片，增加利用率。其基本思想是把内存中的所有页面按照2的幂次方进行分块管理，分配的时候如果没有找到相应大小的块，就把大的块一分为二划分为两个小块；释放内存的时候，相邻的块又能够合成新">
 <meta property="og:type" content="article">
-<meta property="og:title" content="AndroidFramework单编">
-<meta property="og:url" content="https://gitofleonardo.github.io/2022/04/14/AndroidFramework%E5%8D%95%E7%BC%96/index.html">
+<meta property="og:title" content="Linux内存管理">
+<meta property="og:url" content="https://gitofleonardo.github.io/2022/04/16/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/index.html">
 <meta property="og:site_name" content="Hhvvg | Blog">
-<meta property="og:description" content="关于Android11下单编Framework的问题在Android 11下，不知道为什么原本我在Android 6.0下使用的mm出现了错误（会把test也一并编译，导致问题），因此更换为下面的命令： make -j16 SystemUI make -j16 framework or make -j16framework-minus-apex make -j16 services">
+<meta property="og:description" content="内存分页内存分页是Linux中的一种内存管理机制，内存被分为固定大小的块，称为页（page）。Linux中的页使用结构struct page来表示。 内存的分配BUDDY算法BUDDY算法的作用是减少存储空间中的空洞与碎片，增加利用率。其基本思想是把内存中的所有页面按照2的幂次方进行分块管理，分配的时候如果没有找到相应大小的块，就把大的块一分为二划分为两个小块；释放内存的时候，相邻的块又能够合成新">
 <meta property="og:locale">
-<meta property="article:published_time" content="2022-04-14T10:56:09.000Z">
-<meta property="article:modified_time" content="2022-04-14T10:57:52.928Z">
+<meta property="article:published_time" content="2022-04-16T06:31:21.000Z">
+<meta property="article:modified_time" content="2022-04-16T07:28:28.317Z">
 <meta property="article:author" content="Hhvvg">
-<meta property="article:tag" content="Android">
-<meta property="article:tag" content="Framework">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://gitofleonardo.github.io/2022/04/14/AndroidFramework%E5%8D%95%E7%BC%96/">
+<link rel="canonical" href="https://gitofleonardo.github.io/2022/04/16/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -47,7 +46,7 @@
   };
 </script>
 
-  <title>AndroidFramework单编 | Hhvvg | Blog</title>
+  <title>Linux内存管理 | Hhvvg | Blog</title>
   
 
 
@@ -163,7 +162,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/14/AndroidFramework%E5%8D%95%E7%BC%96/">
+    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/16/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -176,7 +175,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          AndroidFramework单编
+          Linux内存管理
         </h1>
 
         <div class="post-meta">
@@ -187,7 +186,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2022-04-14 18:56:09 / Modified: 18:57:52" itemprop="dateCreated datePublished" datetime="2022-04-14T18:56:09+08:00">2022-04-14</time>
+              <time title="Created: 2022-04-16 14:31:21 / Modified: 15:28:28" itemprop="dateCreated datePublished" datetime="2022-04-16T14:31:21+08:00">2022-04-16</time>
             </span>
 
           
@@ -208,10 +207,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="关于Android11下单编Framework的问题"><a href="#关于Android11下单编Framework的问题" class="headerlink" title="关于Android11下单编Framework的问题"></a>关于Android11下单编Framework的问题</h1><p>在Android 11下，不知道为什么原本我在Android 6.0下使用的<code>mm</code>出现了错误（会把test也一并编译，导致问题），因此更换为下面的命令：</p>
-<p><code>make -j16 SystemUI</code></p>
-<p><code>make -j16 framework or make -j16framework-minus-apex</code></p>
-<p><code>make -j16 services</code></p>
+        <h1 id="内存分页"><a href="#内存分页" class="headerlink" title="内存分页"></a>内存分页</h1><p>内存分页是Linux中的一种内存管理机制，内存被分为固定大小的块，称为页（page）。Linux中的页使用结构<code>struct page</code>来表示。</p>
+<h2 id="内存的分配"><a href="#内存的分配" class="headerlink" title="内存的分配"></a>内存的分配</h2><h3 id="BUDDY算法"><a href="#BUDDY算法" class="headerlink" title="BUDDY算法"></a>BUDDY算法</h3><p>BUDDY算法的作用是减少存储空间中的空洞与碎片，增加利用率。其基本思想是把内存中的所有页面按照2的幂次方进行分块管理，分配的时候如果没有找到相应大小的块，就把大的块一分为二划分为两个小块；释放内存的时候，相邻的块又能够合成新的大块。</p>
+<h3 id="SLAB内存管理"><a href="#SLAB内存管理" class="headerlink" title="SLAB内存管理"></a>SLAB内存管理</h3><p>BUDDY内存分配的时候，是以页块为基本单位来分配的。但是这种方法的缺点就是粒度比较大，而大多数的内核对象远小于页的大小，因此需要一种更加细粒度的方法来对内存进行管理。由此，Linux引入了SLAB层来进行更加细致的内存管理。</p>
+<p>SLAB使用高速缓存来描述不同的内存对象，每种内存对象对应着一个高速缓存。SLAB按照对象的大小进行了分组，在分配的时候不会产生大的内存碎片，并且支持硬件缓存来提高TLB的性能。</p>
+<p>为了方便管理，SLAB分为三种状态：full、partial和empty。full表示没有可用的内存对象，partial表示部分使用中，empty表示没有正在使用的内存对象。</p>
+<h3 id="SLUB与SLOB"><a href="#SLUB与SLOB" class="headerlink" title="SLUB与SLOB"></a>SLUB与SLOB</h3><p>SLUB保留了SLAB的基本思想，但是简化了SLAB中的一些结构，提升内存利用率。而SLOB是一个简化的内存分配器，主要适用于内存非常有限、处理简单的系统。</p>
+<h1 id="进程地址空间"><a href="#进程地址空间" class="headerlink" title="进程地址空间"></a>进程地址空间</h1><h2 id="内存映射"><a href="#内存映射" class="headerlink" title="内存映射"></a>内存映射</h2><p>一个进程运行的时候，其用到文件的代码段、数据段等都是映射到内存地址区域的，这个功能是通过<code>mmap()</code>系统调用来实现的。<code>mmap()</code>将文件从偏移<code>offset</code>的位置开始的长度为<code>length</code>的一个块映射到内存区域中。</p>
+<h2 id="缺页错误"><a href="#缺页错误" class="headerlink" title="缺页错误"></a>缺页错误</h2><p>虚拟内存进行分配之后，并没有分配相应的物理页面。内核通过缺页错误进行处理，然后进行页表层的创建。</p>
 
     </div>
 
@@ -221,8 +224,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/Android/" rel="tag"># Android</a>
-              <a href="/tags/Framework/" rel="tag"># Framework</a>
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
           </div>
 
         
@@ -231,13 +233,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/04/14/Linux-CFS/" rel="prev" title="Linux CFS">
-      <i class="fa fa-chevron-left"></i> Linux CFS
+    <a href="/2022/04/15/Linux%E8%BF%9B%E7%A8%8B/" rel="prev" title="Linux进程">
+      <i class="fa fa-chevron-left"></i> Linux进程
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2022/04/14/Android%E5%90%84%E7%89%88%E6%9C%AC%E9%80%82%E9%85%8D%E7%82%B9/" rel="next" title="Android各版本适配点">
-      Android各版本适配点 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -296,7 +295,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E4%BA%8EAndroid11%E4%B8%8B%E5%8D%95%E7%BC%96Framework%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">关于Android11下单编Framework的问题</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%88%86%E9%A1%B5"><span class="nav-number">1.</span> <span class="nav-text">内存分页</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%9A%84%E5%88%86%E9%85%8D"><span class="nav-number">1.1.</span> <span class="nav-text">内存的分配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BUDDY%E7%AE%97%E6%B3%95"><span class="nav-number">1.1.1.</span> <span class="nav-text">BUDDY算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SLAB%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">1.1.2.</span> <span class="nav-text">SLAB内存管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SLUB%E4%B8%8ESLOB"><span class="nav-number">1.1.3.</span> <span class="nav-text">SLUB与SLOB</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4"><span class="nav-number">2.</span> <span class="nav-text">进程地址空间</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%98%A0%E5%B0%84"><span class="nav-number">2.1.</span> <span class="nav-text">内存映射</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%BA%E9%A1%B5%E9%94%99%E8%AF%AF"><span class="nav-number">2.2.</span> <span class="nav-text">缺页错误</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
