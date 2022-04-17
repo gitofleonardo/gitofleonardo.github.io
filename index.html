@@ -156,6 +156,95 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/17/%E8%81%8A%E8%81%8A%E7%BA%A2%E9%BB%91%E6%A0%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Hhvvg">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hhvvg | Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/17/%E8%81%8A%E8%81%8A%E7%BA%A2%E9%BB%91%E6%A0%91/" class="post-title-link" itemprop="url">聊聊红黑树</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-17 14:14:02 / Modified: 21:37:31" itemprop="dateCreated datePublished" datetime="2022-04-17T14:14:02+08:00">2022-04-17</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>大家都知道，如果二叉查找树不平衡的话，查找的时间复杂度就会降为O(n)，也就是说二叉查找树退化成链表了。因此，需要让二叉查找树维持平衡，这样就算在最坏的情况下，基本的操作的时间复杂度也会降低到O(logn)。</p>
+<h1 id="红黑树的几个性质"><a href="#红黑树的几个性质" class="headerlink" title="红黑树的几个性质"></a>红黑树的几个性质</h1><p>红黑树，结点上有一个存储位用来表示结点是红色的还是黑色的，因此叫红黑树。红黑树可以确保从根节点到叶结点的任意两条路径的长度不会相差两倍，因此红黑树是相对平衡的。</p>
+<p>一颗二叉查找树需要满足一下的性质，才能称为红黑树：</p>
+<ul>
+<li>每个结点要么红色，要么是黑色；</li>
+<li>根节点为黑色的；</li>
+<li>每个叶结点（NIL）是黑色的；</li>
+<li>红结点的子节点只能是黑色，也就是说不能够出现两个红结点相邻的情况；</li>
+<li>对于每个结点，从它出发到任意子结点的路径，黑结点的数量是相同的（称为黑高度相等）。</li>
+</ul>
+<p>采取《算法导论》一书中对于红黑树的编写方法，设置一个哨兵对象NIL结点来作为所有结点的空结点，即对于没有子结点的结点，将它们的子结点指向NIL结点：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    A                       A</span><br><span class="line">|       |       -&gt;      |       |</span><br><span class="line">NULL    NULL            NIL     NIL</span><br></pre></td></tr></table></figure>
+
+<h1 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h1><p>二叉树的旋转是一种比较常见的操作，包括了左旋、右旋与双旋。</p>
+<p>左旋是对结点进行逆时针旋转，让原本结点的右结点成为新的父结点，而原来的父结点成为新的父结点的左结点。右旋与左旋的情况相反，右旋为顺时针旋转，原来的左结点成为新的父结点，而原来的父结点成为新的父结点的右结点。</p>
+<p>双旋包括了左旋后右旋与右旋后左旋。</p>
+<p>左旋的为代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">leftRotate</span><span class="params">(TreeNode node)</span> &#123;</span><br><span class="line">    <span class="comment">// 右结点成为新的父节点</span></span><br><span class="line">    <span class="type">TreeNdoe</span> <span class="variable">newParent</span> <span class="operator">=</span> node.right;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 原右结点的左子结点成为原父节点的右结点</span></span><br><span class="line">    node.right = newParent.left;</span><br><span class="line">    node.right.parent = node;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 右结点成为父节点，原父结点成为新父节点的左子结点</span></span><br><span class="line">    newParent.left = node;</span><br><span class="line">    newParent.parent = node.parent;</span><br><span class="line">    node.parent = newParent;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (newParent.parent = nil) &#123;</span><br><span class="line">        <span class="comment">// 根结点</span></span><br><span class="line">        treeRoot = newParent;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newParent.parent.left == node) &#123;</span><br><span class="line">        <span class="comment">// 设置原父结点的父结点的左右子结点为新的父结点</span></span><br><span class="line">        newParent.parent.left = newParent;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        newParent.parent.right = newParent;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h1><p>想红黑树中插入一个新的结点的时间复杂度为O(logn)，新的结点插入的方法与二叉查找树的插入方法基本相同，只不过多了几个步骤来保证红黑树的性质不会被破坏。在插入新结点之后，将新结点着色为红色，然后调用修复修复函数来对结点重新着色与旋转，保证红黑树的性质。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">insert</span><span class="params">(TreeNdoe newNode)</span> &#123;</span><br><span class="line">    <span class="type">TreeNode</span> <span class="variable">currRoot</span> <span class="operator">=</span> treeRoot;</span><br><span class="line">    <span class="type">TreeNode</span> <span class="variable">newParent</span> <span class="operator">=</span> nil;</span><br><span class="line">    <span class="keyword">while</span> (currRoot != nil) &#123;</span><br><span class="line">        newParent = currRoot;</span><br><span class="line">        <span class="keyword">if</span> (newNode.value &gt; currRoot.value) &#123;</span><br><span class="line">            <span class="comment">// 插入到当前结点的右边</span></span><br><span class="line">            currRoot = currRoot.right;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newNode.value &lt; currRoot.value) &#123;</span><br><span class="line">            <span class="comment">// 插入到当前结点的左边</span></span><br><span class="line">            currRoot = currRoot.left;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 已经存在该结点，返回</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    newNode.parent = newParent;</span><br><span class="line">    <span class="keyword">if</span> (newParent == nil) &#123;</span><br><span class="line">        <span class="comment">// 新的结点成为根结点</span></span><br><span class="line">        treeRoot = newNode;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (newParent.value &gt; newNode.value) &#123;</span><br><span class="line">        <span class="comment">// 新结点成为左结点</span></span><br><span class="line">        newParent.left = newNdoe;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 新结点成为右结点</span></span><br><span class="line">        newParent.right = newNode;</span><br><span class="line">    &#125;</span><br><span class="line">    newNode.left = nil;</span><br><span class="line">    newNode.right = nil;</span><br><span class="line">    newNode.color = red;</span><br><span class="line">    fixUp(newNode);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">fixUp</span><span class="params">(TreeNode newNode)</span> &#123;</span><br><span class="line">    <span class="type">TreeNode</span> <span class="variable">currNode</span> <span class="operator">=</span> newNode;</span><br><span class="line">    <span class="comment">// 直到结点的父结点颜色为黑色</span></span><br><span class="line">    <span class="keyword">while</span> (currNode.parent.color == red) &#123;</span><br><span class="line">        <span class="keyword">if</span> (currNode.parent.left == currNode.parent) &#123;</span><br><span class="line">            <span class="comment">// 当前结点的父结点是左结点</span></span><br><span class="line">            <span class="type">TreeNode</span> <span class="variable">uncleNode</span> <span class="operator">=</span> currNode.parent.parent.right;</span><br><span class="line">            <span class="comment">// 如果当前结点的叔结点是红色的，那么可以把红色结点上浮</span></span><br><span class="line">            <span class="comment">// 然后新的红色结点成为当前结点继续处理</span></span><br><span class="line">            <span class="keyword">if</span> (uncleNode.color == red) &#123;</span><br><span class="line">                uncleNode.color = black;</span><br><span class="line">                currNode.parent.color = black;</span><br><span class="line">                currNode = currNode.parent;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span>(currNode.parent.right == currNode) &#123;</span><br><span class="line">                <span class="comment">// 如果当前结点是父节点的右子结点，则进行左旋操作</span></span><br><span class="line">                currNode = currNode.parent;</span><br><span class="line">                leftRotate(currNode);</span><br><span class="line">                <span class="comment">// 左旋之后右旋，然后黑结点上浮</span></span><br><span class="line">                currNode.parent.color = black;</span><br><span class="line">                currNode.parent.parent.color = red;</span><br><span class="line">                rightRotate(currNode.parent.parent);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 跟上面对称的操作</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    treeRoot.color = red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h1><p>结点的删除比插入要复杂一些，分为两种情况讨论。一种是删除的结点为红色，这种情况下无需对红黑树进行修复操作，因为不影响黑高度。一种是删除的结点为黑色，删除黑结点之后黑高度势必会发生改变，因此要进行调整。</p>
+<p>…未完待续</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/16/Linux%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1369,91 +1458,11 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/14/Linux-O-1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Hhvvg">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hhvvg | Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/14/Linux-O-1/" class="post-title-link" itemprop="url">Linux O(1)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2022-04-14 13:40:49 / Modified: 22:45:46" itemprop="dateCreated datePublished" datetime="2022-04-14T13:40:49+08:00">2022-04-14</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-users"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="firestore-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Linux-O-1-调度器"><a href="#Linux-O-1-调度器" class="headerlink" title="Linux-O(1)调度器"></a>Linux-O(1)调度器</h1><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>O(1)调度器是在<code>Linux-2.6.0</code>内核中支持的调度器，之所以叫O(1)调度器，是因为不管有多少进程，调度都能在常数时间内完成。</p>
-<h2 id="调度器的结构"><a href="#调度器的结构" class="headerlink" title="调度器的结构"></a>调度器的结构</h2><p>对于O(1)调度来说，每个CPU都自己维护一个运行队列，运行队列由两个优先级数组组成，分别为活跃数组与过期数组。</p>
-<p>优先级数组，从数据结构上来说其实就是一个二级数组（图的邻接表表示法），每一级代表着一个优先级，总共包含了<code>MAX_PRIO</code>个（140个）个优先级。当活跃数组中的一个进程用完自己的时间片之后，就会被移动到另一个过期数组中。在移动的同时，其优先级也会被重新计算。当活跃数组中的所有的进程都用完时间片之后，活跃数组与过期数组的指针就会进行互换。</p>
-<p>在<code>Linux-2.6.0</code>内核中，运行队列<code>runqueue</code>的结构如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">runqueue</span> &#123;</span></span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">     * prio_array_t原型为prio_array</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">	<span class="type">prio_array_t</span> *active, *expired, arrays[<span class="number">2</span>];</span><br><span class="line">    ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>优先数组<code>prio_array</code>的定义如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">prio_array</span> &#123;</span></span><br><span class="line">	<span class="type">int</span> nr_active;</span><br><span class="line">	<span class="type">unsigned</span> <span class="type">long</span> bitmap[BITMAP_SIZE];</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">queue</span>[<span class="title">MAX_PRIO</span>];</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-
-<p>至此，可以很清晰地看到运行队列的结构了。</p>
-<h2 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h2><p>2.6.0内核的调度代码还是比较简洁的，在<code>schedule(void)</code>函数中（这是个系统调用）。</p>
-<ol>
-<li>做好切换调度前的准备，包括释放内核的自旋锁，给运行队列加上自旋锁</li>
-<li>选择下一个被执行的进程，这里会根据运行队列选出进程</li>
-<li>切换任务，包括切换上下文</li>
-<li>最后是释放运行队列的自旋锁，内核加锁，启用抢占等</li>
-</ol>
-<p>其中在选择进程的时候，可能会重新计算进程的动态优先级，并放到过期数组中。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="Next page"></i></a>
+  </nav>
 
 
 
@@ -1520,14 +1529,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
