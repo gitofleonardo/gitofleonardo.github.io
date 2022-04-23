@@ -156,6 +156,100 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
+    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/23/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="Hhvvg">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hhvvg | Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/23/Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" class="post-title-link" itemprop="url">Linux文件系统</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2022-04-23 14:50:16 / Modified: 16:41:35" itemprop="dateCreated datePublished" datetime="2022-04-23T14:50:16+08:00">2022-04-23</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-users"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span class="firestore-visitors-count"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h1><p>Linux中文件的概念并没有那么纯粹，不单单指的是磁盘上的文件。Linux中只要是字节序列构成的载体，都可以是文件，比如I&#x2F;O设备、socket套接字等。总的来说大致分为以下几类：</p>
+<ul>
+<li>普通文件。即磁盘上的文件</li>
+<li>目录文件。即目录</li>
+<li>链接文件。Windows上称为快捷方式，但是在Linux中链接文件还分为软链接（符号链接）与硬链接</li>
+<li>设备文件。Linux中将设备看作文件来进行管理，分为块设备与字符设备。</li>
+<li>socket文件。用于网络通信</li>
+<li>管道文件。用于IPC</li>
+</ul>
+<h2 id="文件系统结构"><a href="#文件系统结构" class="headerlink" title="文件系统结构"></a>文件系统结构</h2><p>在Linux中，文件系统并不是像Windows中的那样分为一个一个盘，而是以挂载到别的文件系统的形式存在的。这种结构可以简单地看成树型结构，根结点则是根文件系统。</p>
+<h1 id="文件系统"><a href="#文件系统" class="headerlink" title="文件系统"></a>文件系统</h1><p>Linux可以支持很多文件系统，这些文件系统之间的数据也可以是互通的。Linux使用了<code>VFS</code>这一结构来管理文件系统。</p>
+<p><code>VFS</code>即虚拟文件系统，在各种具体的文件系统之上建立一个抽象层，屏蔽了不同文件系统之间的差异。这种抽象层其实也像<code>POSIX</code>标准一样，为了屏蔽底层的细节而设计的。</p>
+<h2 id="VFS"><a href="#VFS" class="headerlink" title="VFS"></a>VFS</h2><p><code>VFS</code>主要有如下的四个对象类型：</p>
+<ul>
+<li>超级块（struct super_block）。超级块代表一个已经安装的文件系统，存储着该文件系统的有关信息，比如文件系统的类型、大小、状态等。</li>
+<li>索引结点（struct inode）。索引结点对象表示存储设备上的一个实际的物理文件，存储该文件的有关信息，比如权限、大小以及创建时间等。</li>
+<li>目录项（struct dentry）。目录项描述了文件系统的层次结构，不管是目录还是普通的文件，都是一个目录项对象。</li>
+<li>文件（struct file）。文件对象代表已经被进程打开的文件，主要用于建立进程和文件之间的对应关系。</li>
+</ul>
+<p>值得注意的是，目录项并不是存在于磁盘中的信息，而是存在于内存当中，相当于磁盘的缓存。</p>
+<h2 id="文件-1"><a href="#文件-1" class="headerlink" title="文件"></a>文件</h2><p>文件对象描述已经打开的文件，对于进程来说，能够直接进行处理的是文件，而不是超级块之类的。对于每个<code>inode</code>，可以对应多个文件对象，而一个文件对象只能对应一个<code>inode</code>。文件对象包含了对文件的相关操作<code>struct file_operations</code>，包括打开、关闭、读写等等。</p>
+<h2 id="与文件系统相关的结构"><a href="#与文件系统相关的结构" class="headerlink" title="与文件系统相关的结构"></a>与文件系统相关的结构</h2><p>超级块中包含了一些其他的文件系统有关的结构体，例如<code>struct file_system_type</code>，表示文件系统类型。对于<code>ext3</code>文件系统来说定义如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_system_type</span> <span class="title">ext3_fs_type</span> =</span> &#123;</span><br><span class="line">	.owner		= THIS_MODULE,</span><br><span class="line">	.name		= <span class="string">&quot;ext3&quot;</span>,</span><br><span class="line">	.get_sb		= ext3_get_sb,</span><br><span class="line">	.kill_sb	= kill_block_super,</span><br><span class="line">	.fs_flags	= FS_REQUIRES_DEV,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p><code>struct vfsmount</code>则包含了文件系统挂载的信息，包括挂载点、根结点等。</p>
+<h2 id="与进程相关的结构"><a href="#与进程相关的结构" class="headerlink" title="与进程相关的结构"></a>与进程相关的结构</h2><p>每个进程都有自己的根目录与当前工作目录，例如在<code>shell</code>中，可以使用<code>pwd</code>（print working directory）命令来打印当前工作目录。除此之外，进程还需要记录自己打开的文件，进程打开的文件用<code>struct files_struct</code>来表示，里面就包括了<code>struct file</code>数组，记录已经打开的文件信息。</p>
+<h1 id="inotify机制"><a href="#inotify机制" class="headerlink" title="inotify机制"></a>inotify机制</h1><p>简单来说，<code>inotify</code>机制是用来监听文件的变化的，类似与设备发送中断来表示设备状态发生了变化，操作系统也会发送信号来表示文件发生了变化，而这一点在Linux是通过<code>inotify</code>机制来实现的。</p>
+<p>每个<code>inode</code>结点上都有一个<code>inotify_watches</code>字段，指向了该<code>inode</code>对象的监控列表，一个<code>watch</code>实例是一个<code>struct inotify_watch</code>结构的实例，代表了对该<code>inode</code>的监控请求，其中就包含了事件处理函数。</p>
+<p><code>inotify</code>的实现原理是，在各个文件操作函数的<code>hook</code>通过<code>inode</code>的成员<code>inotify_watches</code>找到监控列表，然后再通过监控列表找到事件处理函数，然后再进行处理。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
     <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/17/%E8%81%8A%E8%81%8A%E7%BA%A2%E9%BB%91%E6%A0%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1388,76 +1482,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh">
-    <link itemprop="mainEntityOfPage" href="https://gitofleonardo.github.io/2022/04/14/Linux-CFS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="Hhvvg">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hhvvg | Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/14/Linux-CFS/" class="post-title-link" itemprop="url">Linux CFS</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2022-04-14 16:39:44 / Modified: 19:50:00" itemprop="dateCreated datePublished" datetime="2022-04-14T16:39:44+08:00">2022-04-14</time>
-            </span>
-
-          
-            <span class="post-meta-item" title="Views">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-users"></i>
-              </span>
-              <span class="post-meta-item-text">Views: </span>
-              <span class="firestore-visitors-count"></span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Linux-CFS调度器"><a href="#Linux-CFS调度器" class="headerlink" title="Linux-CFS调度器"></a>Linux-CFS调度器</h1><p><code>CFS</code>调度器是在2.6.23内核中开始引入的调度器。事实上，在（我写这篇文章时）最新的5.17.3内核上，你仍然可以看到他的身影。</p>
-<h2 id="虚拟运行时间"><a href="#虚拟运行时间" class="headerlink" title="虚拟运行时间"></a>虚拟运行时间</h2><p>虚拟运行时间是<code>CFS</code>引入的一个概念，与实际的运行时间成正比，与权重成反比。</p>
-<h2 id="权重"><a href="#权重" class="headerlink" title="权重"></a>权重</h2><p>进程的虚拟运行时间与权重成反比，实际上，这个权重是由进程的优先级来决定的，在Linux中为<code>nice</code>值。进程的优先级越高，则权重越高，进程的虚拟运行时间就越小。</p>
-<h2 id="调度"><a href="#调度" class="headerlink" title="调度"></a>调度</h2><p>那么进程的虚拟运行时间是怎么影响到进程执行的顺序的呢？<code>CFS</code>调度使用了红黑树，键值为虚拟运行时间，每次从红黑树中取值最小的进程来运行（树中的最左子节点）。</p>
-<p>例如，如果两个进程的运行时间相同，那么他们的运行优先级就是由他们的静态优先级<code>nice</code>值来决定的。如果进程A的运行时间大于进程B的运行时间（A虚拟运行时间增加，动态优先级降低），那么通过增加进程A的静态优先级（A增加静态优先级后，平衡掉增加的虚拟运行时间），这两个进程所可以获得的运行时间还是有可能接近的。<code>CFS</code>就是以这样一种方式来保证了公平性。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1529,7 +1553,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
